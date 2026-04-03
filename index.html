@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Speaking Gym – FaceTiming My Younger Self</title>
+<title>Speaking Gym – FaceTiming My Younger Self Advice</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -127,7 +127,7 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
 <body>
 <div class="hdr">
   <div class="hdr-l"><div class="hdot"></div>Speaking Gym <span style="opacity:.45;font-weight:400;font-size:12px">with Noah</span></div>
-  <div class="hdr-r">FaceTiming My Younger Self · Advice I Wish I Knew Earlier</div>
+  <div class="hdr-r">FaceTiming My Younger Self Advice · I Wish I Knew Earlier</div>
 </div>
 <div id="vert">
   <div class="vert-top">
@@ -176,8 +176,8 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
   <div class="h-left">
     <div class="h-title">
       <div class="h-eye">Speaking Gym with Noah</div>
-      <div class="h-main">FaceTiming My Younger Self</div>
-      <div class="h-sub">Advice I Wish I Knew Earlier</div>
+      <div class="h-main">FaceTiming My Younger Self Advice</div>
+      <div class="h-sub">I Wish I Knew Earlier</div>
     </div>
     <div class="h-vid">
       <iframe id="ph" src="https://www.youtube.com/embed/E4rwtuJT3KM?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -465,7 +465,19 @@ function prog(){const ld=Object.values(st).filter(s=>s.l).length,tot=SUBS.length
 function nowPlaying(idx){const t=document.getElementById('h-txt'),k=document.getElementById('h-kor');if(!t)return;if(idx===null){t.textContent='자막을 클릭해서 시작하세요';t.classList.add('idle');if(k)k.style.display='none';return;}t.textContent=SUBS[idx].text;t.classList.remove('idle');if(k){if(showKor){k.textContent=SUBS[idx].kor;k.style.display='';}else k.style.display='none';}}
 function renderV(v){view=v||view;const div=document.getElementById('sv');div.innerHTML='';SUBS.forEach((sub,i)=>{if(view==='done'&&!st[i].l)return;const card=document.createElement('div');card.className='sc'+(i===playing?' playing':'')+(i===selIdx?' sel':'')+(st[i].l?' done':'');card.dataset.i=i;const inn=document.createElement('div');inn.className='sc-in';const pb=document.createElement('button');pb.className='spa';const es=document.createElement('span');es.className='eng';es.textContent=st[i].h?'🙈':sub.text;pb.appendChild(es);const kw=document.createElement('span');kw.className='kwrap'+(openK.has(i)?' open':'');const ks=document.createElement('span');ks.className='kt';if(showKor)ks.textContent=sub.kor;kw.appendChild(ks);pb.appendChild(kw);pb.onclick=()=>{if(showKor&&!st[i].h){openK.has(i)?openK.delete(i):openK.add(i);}doPlay(i,'v');};const acts=document.createElement('div');acts.className='sacts';const hb=document.createElement('button');hb.className='sa'+(st[i].h?' hid':'');hb.textContent='🙈';hb.onclick=e=>{e.stopPropagation();st[i].h=!st[i].h;save();renderV();};const cb=document.createElement('button');cb.className='sa'+(st[i].l?' chk':'');cb.textContent='✔';cb.onclick=e=>{e.stopPropagation();st[i].l=!st[i].l;save();renderV();prog();};acts.appendChild(hb);acts.appendChild(cb);inn.appendChild(pb);inn.appendChild(acts);card.appendChild(inn);div.appendChild(card);});prog();}
 function renderH(v){view=v||view;const div=document.getElementById('sh');div.innerHTML='';SUBS.forEach((sub,i)=>{if(view==='done'&&!st[i].l)return;const row=document.createElement('div');row.className='hrow'+(i===playing?' playing':'')+(i===selIdx?' sel':'');row.dataset.i=i;const btn=document.createElement('button');btn.className='hsb'+(st[i].l?' done':'');const eng=document.createElement('span');eng.className='h-eng';eng.textContent=st[i].h?'🙈':sub.text;btn.appendChild(eng);const kw=document.createElement('span');kw.className='hkwrap'+(openK.has(i)?' open':'');const ks=document.createElement('span');ks.className='hkt';if(showKor)ks.textContent=sub.kor;kw.appendChild(ks);btn.appendChild(kw);btn.onclick=()=>{if(showKor&&!st[i].h){openK.has(i)?openK.delete(i):openK.add(i);}doPlay(i,'h');};const acts=document.createElement('div');acts.className='hacts';const hb=document.createElement('button');hb.className='ha'+(st[i].h?' hid':'');hb.textContent='🙈';hb.onclick=e=>{e.stopPropagation();st[i].h=!st[i].h;save();renderH();};const cb=document.createElement('button');cb.className='ha'+(st[i].l?' chk':'');cb.textContent='✔';cb.onclick=e=>{e.stopPropagation();st[i].l=!st[i].l;save();renderH();prog();};acts.appendChild(hb);acts.appendChild(cb);row.appendChild(btn);row.appendChild(acts);div.appendChild(row);});prog();}
-function scrollTo(i,m){const id=m==='v'?'sv':'sh';document.getElementById(id)?.querySelector('[data-i="'+i+'"]')?.scrollIntoView({behavior:'smooth',block:'center'});}
+function scrollTo(i,m){
+  const id=m==='v'?'sv':'sh';
+  const container=document.getElementById(id);
+  const row=container?.querySelector('[data-i="'+i+'"]');
+  if(!row)return;
+  if(m==='h'){row.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  // 학생 모드: sticky 헤더 높이 계산해서 두 번째 줄 위치에 오도록 스크롤
+  const top=document.querySelector('.vert-top');
+  const headerH=top?top.offsetHeight:0;
+  const rowTop=row.getBoundingClientRect().top+window.scrollY;
+  const offset=rowTop-headerH-8;
+  window.scrollTo({top:offset,behavior:'smooth'});
+}
 function doPlay(i,m){selIdx=i;const cp=m==='v'?pv:ph;const re=m==='v'?renderV:renderH;re();if(!cp?.seekTo)return;const s=cp.getPlayerState();if(playing!==i){startPlay(i,m);return;}if(s===1){cp.pauseVideo();if(tid)clearTimeout(tid);paused=true;pausedIdx=i;playing=null;re();return;}if(s===2&&paused&&pausedIdx===i){startPlay(i,m);return;}startPlay(i,m);}
 function startPlay(i,m){playing=i;paused=false;pausedIdx=null;const re=m==='v'?renderV:renderH;re();scrollTo(i,m);const cp=m==='v'?pv:ph;const s=SUBS[i].start,e=playMode==='single'?SUBS[i].end:(SUBS[i+1]?SUBS[i+1].end:SUBS[i].end);cp.seekTo(s,true);cp.playVideo();if(tid)clearTimeout(tid);tid=setTimeout(()=>{cp.pauseVideo();playing=null;re();},(e-s)*1000);}
 function toggleTr(m){showKor=!showKor;if(!showKor)openK.clear();const lbl=showKor?'🇰🇷 번역 숨기기':'🇰🇷 번역';['v-tr','h-tr'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',showKor);}});layout==='vert'?renderV():renderH();}
