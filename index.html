@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speaking Gym – Convenience Store Drinks EVER</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1e2d4a;--blue:#3b82f6;--blue-light:#dbeafe;--blue-soft:#eff6ff;
+  --beige:#f5f0ea;--beige-mid:#e8e0d4;
+  --green:#10b981;--green-light:#d1fae5;--green-dark:#065f46;
+  --orange:#f97316;--orange-light:#ffedd5;
+  --g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g600:#475569;
+  --card:#fff;--bg:#f7f8fa;--fs:15px;
+}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--navy);}
+.hdr{background:var(--navy);color:#fff;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-l{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;}
+.hdot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.hdr-r{font-size:11px;opacity:.4;}
+.tabs{display:flex;background:var(--g100);border-radius:9px;padding:3px;gap:3px;width:100%;}
+.tab{flex:1;padding:6px 0;border:none;background:transparent;border-radius:7px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;transition:.13s;}
+.tab.on{background:var(--card);color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%;}
+.btn{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:.13s;white-space:nowrap;}
+.btn.mode{background:var(--orange-light);color:var(--orange);}
+.btn.mode.on{background:var(--orange);color:#fff;}
+.btn.tr{background:var(--green-light);color:var(--green-dark);}
+.btn.tr.on{background:var(--green-dark);color:#fff;}
+.btn.lay{background:var(--navy);color:#fff;margin-left:auto;}
+.btn.view{background:var(--g100);color:var(--g600);border:1px solid var(--g200);}
+.btn.view.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn.fnt{background:var(--blue-light);color:var(--blue);}
+.fpwrap{position:relative;}
+.fpop{display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:var(--card);border:1px solid var(--g200);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:10px;gap:7px;z-index:500;white-space:nowrap;flex-direction:column;}
+.fpop.open{display:flex;}
+.fplbl{font-size:11px;color:var(--g400);font-weight:600;letter-spacing:.05em;}
+.fprow{display:flex;gap:6px;}
+.fpo{padding:6px 12px;border-radius:7px;border:1.5px solid var(--g200);background:var(--g100);font-weight:600;cursor:pointer;transition:.12s;color:var(--navy);font-size:13px;}
+.fpo:hover{border-color:var(--blue);color:var(--blue);}
+.fpo.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.prog-wrap{display:flex;align-items:center;gap:10px;width:100%;}
+.prog-circle{position:relative;width:46px;height:46px;flex-shrink:0;}
+.prog-circle svg{transform:rotate(-90deg);}
+.pbg{fill:none;stroke:var(--g200);stroke-width:4;}
+.pfg{fill:none;stroke:var(--blue);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .5s;}
+.pnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);}
+.prog-info{flex:1;}
+.prog-lbl{font-size:11px;color:var(--g400);}
+.prog-cnt{font-size:12px;font-weight:600;color:var(--navy);margin-top:1px;}
+.prog-bar{height:4px;background:var(--g200);border-radius:99px;overflow:hidden;margin-top:4px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:99px;transition:width .5s;}
+#vert{display:block;}
+#vert.off{display:none;}
+.vert-top{background:var(--card);box-shadow:0 2px 10px rgba(0,0,0,.08);border-radius:0 0 18px 18px;margin-bottom:8px;}
+.vert-top iframe{width:100%;aspect-ratio:16/9;border:none;display:block;}
+.vert-ctrl{padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px;}
+.sub-list{padding:0 10px 24px;display:flex;flex-direction:column;gap:7px;}
+.sc{background:var(--card);border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;}
+.sc.playing{animation:cpulse 1.4s ease-in-out infinite;}
+@keyframes cpulse{0%,100%{box-shadow:0 0 0 2.5px var(--blue),0 4px 14px rgba(59,130,246,.15);}50%{box-shadow:0 0 0 4px var(--blue),0 6px 18px rgba(59,130,246,.3);}}
+.sc.sel .spa{outline:2px solid var(--blue);outline-offset:1px;}
+.sc.done{background:#f0fdf4;}
+.sc-in{display:flex;align-items:stretch;}
+.spa{flex:1;padding:11px 13px;cursor:pointer;text-align:left;background:transparent;border:none;line-height:1.45;word-break:break-word;}
+.eng{display:block;font-size:var(--fs);font-weight:500;color:var(--navy);}
+.sc.done .eng{color:var(--green-dark);text-decoration:line-through;}
+.kwrap{overflow:hidden;max-height:0;transition:max-height .25s,margin-top .2s;}
+.kwrap.open{max-height:60px;margin-top:5px;}
+.kt{font-size:calc(var(--fs) - 3px);color:var(--g600);font-style:italic;display:block;padding-top:5px;border-top:1px solid var(--blue-light);}
+.sc.done .kt{color:var(--green);border-top-color:#bbf7d0;}
+.sacts{display:flex;flex-direction:column;border-left:1px solid var(--g100);flex-shrink:0;}
+.sa{flex:1;width:42px;border:none;background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+.sa:hover{background:var(--g100);}
+.sa.chk{color:var(--green);}
+.sa.hid{background:var(--g100);}
+.sa:first-child{border-bottom:1px solid var(--g100);}
+#horiz{display:none;}
+#horiz.on{display:flex;flex-direction:row;}
+.h-left{width:40%;min-width:300px;max-width:480px;flex-shrink:0;background:var(--beige);border-right:1px solid var(--beige-mid);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
+.h-title{padding:14px 18px 12px;background:var(--card);border-bottom:1px solid var(--beige-mid);flex-shrink:0;}
+.h-eye{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
+.h-main{font-size:19px;font-weight:800;color:var(--navy);line-height:1.2;}
+.h-sub{font-size:12px;color:var(--g400);margin-top:3px;}
+.h-vid{flex:1;display:flex;align-items:center;padding:12px 16px;min-height:0;}
+.h-vid iframe{width:100%;aspect-ratio:16/9;border:none;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);}
+.h-now{margin:0 16px;background:var(--card);border:1.5px solid var(--blue-light);border-radius:12px;padding:12px 14px;flex-shrink:0;}
+.h-now-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);}
+.h-now-txt{font-size:17px;font-weight:700;color:var(--navy);line-height:1.3;margin-top:4px;}
+.h-now-txt.idle{color:var(--g400);font-size:13px;font-style:italic;font-weight:400;}
+.h-now-kor{font-size:13px;color:var(--g400);font-style:italic;margin-top:3px;}
+.h-ctrl{padding:10px 16px 14px;background:var(--card);border-top:1px solid var(--beige-mid);flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
+.h-prog{display:flex;align-items:center;gap:10px;}
+.h-prog-bg{flex:1;height:5px;background:var(--g200);border-radius:99px;overflow:hidden;}
+.h-prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:99px;transition:width .5s;}
+.h-prog-txt{font-size:12px;color:var(--g400);white-space:nowrap;}
+.h-right{flex:1;min-width:0;padding:10px 12px 24px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;}
+.hrow{display:flex;align-items:center;gap:7px;border-radius:13px;}
+.hrow.playing{animation:cpulse 1.4s ease-in-out infinite;}
+.hrow.sel .hsb{outline:2.5px solid var(--blue);outline-offset:1px;}
+.hsb{flex:1;min-width:0;padding:12px 15px;border-radius:13px;border:none;background:var(--card);text-align:left;cursor:pointer;transition:background .13s;line-height:1.45;word-break:break-word;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.hsb:hover{background:var(--blue-soft);}
+.hsb.done{background:#f0fdf4;}
+.h-eng{display:block;font-size:19px;font-weight:600;color:var(--navy);}
+.hsb.done .h-eng{color:var(--green-dark);text-decoration:line-through;}
+.hkwrap{overflow:hidden;max-height:0;transition:max-height .25s,margin-top .2s;}
+.hkwrap.open{max-height:60px;margin-top:5px;}
+.hkt{font-size:13px;color:var(--g400);font-style:italic;display:block;padding-top:5px;border-top:1px solid var(--blue-light);}
+.hsb.done .hkt{color:var(--green);border-top-color:#bbf7d0;}
+.hacts{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.ha{width:42px;height:42px;border:1px solid var(--g200);background:var(--card);border-radius:9px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.12s;}
+.ha:hover{background:var(--blue-soft);}
+.ha.chk{color:var(--green);}
+.ha.hid{background:var(--g100);}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-l"><div class="hdot"></div>Speaking Gym <span style="opacity:.45;font-weight:400;font-size:12px">with Noah</span></div>
+  <div class="hdr-r">Convenience Store Drinks EVER · with Bartender & SimplyNi</div>
+</div>
+<div id="vert">
+  <div class="vert-top">
+    <iframe id="pv" src="https://www.youtube.com/embed/hZzckey5frk?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="vert-ctrl">
+      <div class="prog-wrap">
+        <div class="prog-circle">
+          <svg width="46" height="46" viewBox="0 0 46 46">
+            <circle class="pbg" cx="23" cy="23" r="19"/>
+            <circle class="pfg" id="pfg" cx="23" cy="23" r="19" stroke-dasharray="119.38" stroke-dashoffset="119.38"/>
+          </svg>
+          <div class="pnum" id="ppct">0%</div>
+        </div>
+        <div class="prog-info">
+          <div class="prog-lbl">학습 진행률</div>
+          <div class="prog-cnt" id="pcnt">0 / 42 문장</div>
+          <div class="prog-bar"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab on" id="v-all">전체 보기</button>
+        <button class="tab" id="v-done">✔ 외웠음만</button>
+      </div>
+      <div class="btns">
+        <button class="btn mode" id="v-mode">▶ 한줄</button>
+        <button class="btn tr" id="v-tr">🇰🇷 번역</button>
+        <div class="fpwrap">
+          <button class="btn fnt" id="v-fnt">가 글자크기</button>
+          <div class="fpop" id="fpop">
+            <div class="fplbl">글자 크기</div>
+            <div class="fprow">
+              <button class="fpo" data-s="13">작게</button>
+              <button class="fpo on" data-s="15">보통</button>
+              <button class="fpo" data-s="18">크게</button>
+              <button class="fpo" data-s="21">아주 크게</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn lay" id="v-lay">🖥 수업 모드</button>
+      </div>
+    </div>
+  </div>
+  <div class="sub-list" id="sv"></div>
+</div>
+<div id="horiz">
+  <div class="h-left">
+    <div class="h-title">
+      <div class="h-eye">Speaking Gym with Noah</div>
+      <div class="h-main">Convenience Store Drinks EVER</div>
+      <div class="h-sub">with Bartender & SimplyNi</div>
+    </div>
+    <div class="h-vid">
+      <iframe id="ph" src="https://www.youtube.com/embed/hZzckey5frk?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="h-now">
+      <div class="h-now-lbl">▶ Now Playing</div>
+      <div class="h-now-txt idle" id="h-txt">자막을 클릭해서 시작하세요</div>
+      <div class="h-now-kor" id="h-kor" style="display:none"></div>
+    </div>
+    <div class="h-ctrl">
+      <div class="h-prog">
+        <div class="h-prog-bg"><div class="h-prog-fill" id="hpbar" style="width:0%"></div></div>
+        <div class="h-prog-txt" id="hptxt">0%</div>
+      </div>
+      <div class="btns">
+        <button class="btn mode" id="h-mode">▶ 한줄</button>
+        <button class="btn tr" id="h-tr">🇰🇷 번역</button>
+        <button class="btn view on" id="h-all">전체</button>
+        <button class="btn view" id="h-done">✔ 외웠음</button>
+        <button class="btn lay" id="h-lay">📱 학생 모드</button>
+      </div>
+    </div>
+  </div>
+  <div class="h-right" id="sh"></div>
+</div>
+<script>
+const SUBS=[
+  {
+    "start": 7.279,
+    "end": 9.612,
+    "text": "Hi, Jen. It is you from the future.",
+    "kor": "안녕, Jen. 미래의 너야."
+  },
+  {
+    "start": 9.993,
+    "end": 12.817,
+    "text": "I got a hold of your diaries when you were 27.",
+    "kor": "네가 27살 때 쓴 일기를 읽었어."
+  },
+  {
+    "start": 12.818,
+    "end": 14.467,
+    "text": "In one of your entries, you said that",
+    "kor": "그 중 한 일기에서 네가 이런 말을 했어,"
+  },
+  {
+    "start": 14.468,
+    "end": 17.745,
+    "text": "you wished you had an older sister or a mentor.",
+    "kor": "언니나 멘토가 있었으면 좋겠다고."
+  },
+  {
+    "start": 17.746,
+    "end": 22.237,
+    "text": "So, today I'm going to be that person for you. Mhm.",
+    "kor": "그래서 오늘은 내가 그 사람이 되어줄게."
+  },
+  {
+    "start": 22.238,
+    "end": 23.992,
+    "text": "So, let's get into it.",
+    "kor": "그럼 시작해보자."
+  },
+  {
+    "start": 29.279,
+    "end": 31.5,
+    "text": "You have got to start tracking your menstrual cycle.",
+    "kor": "생리 주기를 꼭 추적하기 시작해야 해."
+  },
+  {
+    "start": 31.501,
+    "end": 33.08,
+    "text": "You might think it's not a big deal.",
+    "kor": "별거 아니라고 생각할 수도 있어."
+  },
+  {
+    "start": 33.081,
+    "end": 34.486,
+    "text": "Your period is pretty regular,",
+    "kor": "생리 주기가 꽤 규칙적이긴 하지,"
+  },
+  {
+    "start": 34.827,
+    "end": 36.559,
+    "text": "but you will realize that",
+    "kor": "그런데 곧 깨닫게 될 거야,"
+  },
+  {
+    "start": 36.559,
+    "end": 39.265,
+    "text": "you're kind of a slightly different version of yourself",
+    "kor": "주기에 따라 네가 조금씩 다른 사람이 된다는 걸."
+  },
+  {
+    "start": 39.266,
+    "end": 40.48,
+    "text": "within that cycle.",
+    "kor": "그 주기 안에서."
+  },
+  {
+    "start": 40.48,
+    "end": 41.48,
+    "text": "So, quick rundown,",
+    "kor": "간단히 설명하면,"
+  },
+  {
+    "start": 41.481,
+    "end": 45.877,
+    "text": "there is follicular, ovulation, lutil, and menration.",
+    "kor": "난포기, 배란기, 황체기, 그리고 월경기가 있어."
+  },
+  {
+    "start": 46.298,
+    "end": 50.298,
+    "text": "But the phase we really got to watch out for is the lutil phase.",
+    "kor": "하지만 특히 주의해야 할 건 황체기야."
+  },
+  {
+    "start": 50.299,
+    "end": 51.585,
+    "text": "The lutil phase is",
+    "kor": "황체기는"
+  },
+  {
+    "start": 51.586,
+    "end": 56.101,
+    "text": "when you are the most prickly, most sensitive version of yourself.",
+    "kor": "네가 가장 예민하고 까칠해지는 시기야."
+  },
+  {
+    "start": 56.102,
+    "end": 59.76,
+    "text": "So you never want this to come behind you like a tsunami.",
+    "kor": "쓰나미처럼 뒤에서 갑자기 덮치게 두면 안 돼."
+  },
+  {
+    "start": 59.761,
+    "end": 62.301,
+    "text": "You want to be front and center watching it come.",
+    "kor": "정면에서 미리 보고 있어야 해."
+  },
+  {
+    "start": 62.302,
+    "end": 64.691,
+    "text": "So that way you can manage your stress appropriately.",
+    "kor": "그래야 스트레스를 적절히 관리할 수 있거든."
+  },
+  {
+    "start": 99.576,
+    "end": 101.116,
+    "text": "I am really grateful",
+    "kor": "나는 정말 감사해"
+  },
+  {
+    "start": 101.117,
+    "end": 104.618,
+    "text": "that you made it a habit to exercise consistently",
+    "kor": "네가 20대에 꾸준히 운동하는 습관을 만든 것에."
+  },
+  {
+    "start": 104.619,
+    "end": 105.825,
+    "text": "in your 20s.",
+    "kor": "20대에."
+  },
+  {
+    "start": 105.826,
+    "end": 108.604,
+    "text": "And you're still going to exercise pretty much every day,",
+    "kor": "그리고 앞으로도 거의 매일 운동을 할 거야,"
+  },
+  {
+    "start": 108.605,
+    "end": 110.12,
+    "text": "but for different reasons.",
+    "kor": "하지만 이유는 달라져."
+  },
+  {
+    "start": 110.121,
+    "end": 113.62,
+    "text": "Back then, it was really about whittling yourself",
+    "kor": "예전엔 몸을 최대한 작게 만드는 게 목표였잖아"
+  },
+  {
+    "start": 113.621,
+    "end": 115.661,
+    "text": "to the smallest size you possibly could.",
+    "kor": "가능한 한 가장 작은 사이즈로."
+  },
+  {
+    "start": 115.662,
+    "end": 116.813,
+    "text": "You have to come to terms that",
+    "kor": "인정해야 해,"
+  },
+  {
+    "start": 116.814,
+    "end": 118.457,
+    "text": "you are never going to look like those girls",
+    "kor": "SNS에서 팔로우하는 그 여자들처럼"
+  },
+  {
+    "start": 118.458,
+    "end": 119.798,
+    "text": "that you follow on social media.",
+    "kor": "절대 보일 수 없다는 걸."
+  },
+  {
+    "start": 119.799,
+    "end": 121.005,
+    "text": "They're not 5'2.",
+    "kor": "그들은 157cm가 아니거든."
+  },
+  {
+    "start": 121.006,
+    "end": 122.784,
+    "text": "They don't have a physique like you.",
+    "kor": "너와 같은 체형도 아니고."
+  },
+  {
+    "start": 122.785,
+    "end": 124.523,
+    "text": "Like, it's as if you were a cow,",
+    "kor": "마치 네가 소인데,"
+  },
+  {
+    "start": 124.524,
+    "end": 126.817,
+    "text": "but you're comparing yourself to a kangaroo.",
+    "kor": "캥거루랑 비교하는 것 같은 거야."
+  },
+  {
+    "start": 127.439,
+    "end": 128.8,
+    "text": "you're never going to look like that.",
+    "kor": "절대 그렇게 될 수 없어."
+  },
+  {
+    "start": 140.242,
+    "end": 142.257,
+    "text": "The main reason why you are at the gym every day,",
+    "kor": "네가 매일 헬스장에 가는 진짜 이유는,"
+  },
+  {
+    "start": 142.258,
+    "end": 143.448,
+    "text": "it's for this.",
+    "kor": "바로 이것 때문이야."
+  },
+  {
+    "start": 143.449,
+    "end": 144.504,
+    "text": "your brain right here.",
+    "kor": "바로 네 뇌."
+  },
+  {
+    "start": 144.505,
+    "end": 145.892,
+    "text": "Because after you work out,",
+    "kor": "운동을 하고 나면,"
+  },
+  {
+    "start": 146.178,
+    "end": 149.272,
+    "text": "you feel a deeper sense of well-being.",
+    "kor": "더 깊은 행복감을 느끼게 돼."
+  },
+  {
+    "start": 149.526,
+    "end": 152.725,
+    "text": "And it's easier to complete tasks when you're in a better mood.",
+    "kor": "기분이 좋을 때 할 일을 더 잘 해낼 수 있거든."
+  },
+  {
+    "start": 153.12,
+    "end": 153.517,
+    "text": "Period.",
+    "kor": "그게 다야."
+  }
+];
+const KEY='sg_'+btoa('hZzckey5frk').slice(0,8);
+let st={},showKor=false,openK=new Set();
+let playing=null,paused=false,pausedIdx=null,playMode='single',tid=null;
+let pv,ph,view='all',selIdx=null,fs=15,layout='vert';
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY))||{};st=s.st||{};fs=s.fs||15;for(let i=0;i<SUBS.length;i++)if(!st[i])st[i]={h:false,l:false};}catch{st={};}}
+function save(){localStorage.setItem(KEY,JSON.stringify({st,fs}));}
+function applyFs(n){fs=n;document.documentElement.style.setProperty('--fs',n+'px');document.querySelectorAll('.fpo').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));save();}
+function prog(){const ld=Object.values(st).filter(s=>s.l).length,tot=SUBS.length;const p=tot?Math.round(ld/tot*100):0,c=2*Math.PI*19;const fg=document.getElementById('pfg');if(fg)fg.style.strokeDashoffset=c*(1-p/100);const g=id=>document.getElementById(id);if(g('ppct'))g('ppct').textContent=p+'%';if(g('pcnt'))g('pcnt').textContent=ld+' / '+tot+' 문장';if(g('pbar'))g('pbar').style.width=p+'%';if(g('hpbar'))g('hpbar').style.width=p+'%';if(g('hptxt'))g('hptxt').textContent=p+'% ('+ld+'/'+tot+')';}
+function nowPlaying(idx){const t=document.getElementById('h-txt'),k=document.getElementById('h-kor');if(!t)return;if(idx===null){t.textContent='자막을 클릭해서 시작하세요';t.classList.add('idle');if(k)k.style.display='none';return;}t.textContent=SUBS[idx].text;t.classList.remove('idle');if(k){if(showKor){k.textContent=SUBS[idx].kor;k.style.display='';}else k.style.display='none';}}
+function renderV(v){view=v||view;const div=document.getElementById('sv');div.innerHTML='';SUBS.forEach((sub,i)=>{if(view==='done'&&!st[i].l)return;const card=document.createElement('div');card.className='sc'+(i===playing?' playing':'')+(i===selIdx?' sel':'')+(st[i].l?' done':'');card.dataset.i=i;const inn=document.createElement('div');inn.className='sc-in';const pb=document.createElement('button');pb.className='spa';const es=document.createElement('span');es.className='eng';es.textContent=st[i].h?'🙈':sub.text;pb.appendChild(es);const kw=document.createElement('span');kw.className='kwrap'+(openK.has(i)?' open':'');const ks=document.createElement('span');ks.className='kt';if(showKor)ks.textContent=sub.kor;kw.appendChild(ks);pb.appendChild(kw);pb.onclick=()=>{if(showKor&&!st[i].h){openK.has(i)?openK.delete(i):openK.add(i);}doPlay(i,'v');};const acts=document.createElement('div');acts.className='sacts';const hb=document.createElement('button');hb.className='sa'+(st[i].h?' hid':'');hb.textContent='🙈';hb.onclick=e=>{e.stopPropagation();st[i].h=!st[i].h;save();renderV();};const cb=document.createElement('button');cb.className='sa'+(st[i].l?' chk':'');cb.textContent='✔';cb.onclick=e=>{e.stopPropagation();st[i].l=!st[i].l;save();renderV();prog();};acts.appendChild(hb);acts.appendChild(cb);inn.appendChild(pb);inn.appendChild(acts);card.appendChild(inn);div.appendChild(card);});prog();}
+function renderH(v){view=v||view;const div=document.getElementById('sh');div.innerHTML='';SUBS.forEach((sub,i)=>{if(view==='done'&&!st[i].l)return;const row=document.createElement('div');row.className='hrow'+(i===playing?' playing':'')+(i===selIdx?' sel':'');row.dataset.i=i;const btn=document.createElement('button');btn.className='hsb'+(st[i].l?' done':'');const eng=document.createElement('span');eng.className='h-eng';eng.textContent=st[i].h?'🙈':sub.text;btn.appendChild(eng);const kw=document.createElement('span');kw.className='hkwrap'+(openK.has(i)?' open':'');const ks=document.createElement('span');ks.className='hkt';if(showKor)ks.textContent=sub.kor;kw.appendChild(ks);btn.appendChild(kw);btn.onclick=()=>{if(showKor&&!st[i].h){openK.has(i)?openK.delete(i):openK.add(i);}doPlay(i,'h');};const acts=document.createElement('div');acts.className='hacts';const hb=document.createElement('button');hb.className='ha'+(st[i].h?' hid':'');hb.textContent='🙈';hb.onclick=e=>{e.stopPropagation();st[i].h=!st[i].h;save();renderH();};const cb=document.createElement('button');cb.className='ha'+(st[i].l?' chk':'');cb.textContent='✔';cb.onclick=e=>{e.stopPropagation();st[i].l=!st[i].l;save();renderH();prog();};acts.appendChild(hb);acts.appendChild(cb);row.appendChild(btn);row.appendChild(acts);div.appendChild(row);});prog();}
+function scrollTo(i,m){const id=m==='v'?'sv':'sh';document.getElementById(id)?.querySelector('[data-i="'+i+'"]')?.scrollIntoView({behavior:'smooth',block:'center'});}
+function doPlay(i,m){selIdx=i;const cp=m==='v'?pv:ph;const re=m==='v'?renderV:renderH;re();if(!cp?.seekTo)return;const s=cp.getPlayerState();if(playing!==i){startPlay(i,m);return;}if(s===1){cp.pauseVideo();if(tid)clearTimeout(tid);paused=true;pausedIdx=i;playing=null;nowPlaying(null);re();return;}if(s===2&&paused&&pausedIdx===i){startPlay(i,m);return;}startPlay(i,m);}
+function startPlay(i,m){playing=i;paused=false;pausedIdx=null;const re=m==='v'?renderV:renderH;re();scrollTo(i,m);nowPlaying(i);const cp=m==='v'?pv:ph;const s=SUBS[i].start,e=playMode==='single'?SUBS[i].end:(SUBS[i+1]?SUBS[i+1].end:SUBS[i].end);cp.seekTo(s,true);cp.playVideo();if(tid)clearTimeout(tid);tid=setTimeout(()=>{cp.pauseVideo();playing=null;nowPlaying(null);re();},(e-s)*1000);}
+function toggleTr(m){showKor=!showKor;if(!showKor)openK.clear();const lbl=showKor?'🇰🇷 번역 숨기기':'🇰🇷 번역';['v-tr','h-tr'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',showKor);}});nowPlaying(playing);layout==='vert'?renderV():renderH();}
+function setLayout(m){layout=m;document.getElementById('vert').classList.toggle('off',m==='horiz');document.getElementById('horiz').classList.toggle('on',m==='horiz');m==='horiz'?renderH():renderV();}
+function syncMode(){const lbl=playMode==='single'?'▶ 한줄':'▶▶ 다음줄';['v-mode','h-mode'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',playMode==='next');}});}
+window.onYouTubeIframeAPIReady=function(){pv=new YT.Player('pv');ph=new YT.Player('ph');};
+window.onload=function(){load();applyFs(fs);document.getElementById('v-all').onclick=function(){this.classList.add('on');document.getElementById('v-done').classList.remove('on');renderV('all');};document.getElementById('v-done').onclick=function(){this.classList.add('on');document.getElementById('v-all').classList.remove('on');renderV('done');};document.getElementById('v-mode').onclick=()=>{playMode=playMode==='single'?'next':'single';syncMode();};document.getElementById('v-tr').onclick=()=>toggleTr('v');document.getElementById('v-lay').onclick=()=>setLayout('horiz');document.getElementById('v-fnt').onclick=e=>{e.stopPropagation();document.getElementById('fpop').classList.toggle('open');};document.querySelectorAll('.fpo').forEach(b=>b.onclick=e=>{e.stopPropagation();applyFs(+b.dataset.s);renderV();document.getElementById('fpop').classList.remove('open');});document.addEventListener('click',()=>document.getElementById('fpop').classList.remove('open'));document.getElementById('h-all').onclick=function(){this.classList.add('on');document.getElementById('h-done').classList.remove('on');renderH('all');};document.getElementById('h-done').onclick=function(){this.classList.add('on');document.getElementById('h-all').classList.remove('on');renderH('done');};document.getElementById('h-mode').onclick=()=>{playMode=playMode==='single'?'next':'single';syncMode();};document.getElementById('h-tr').onclick=()=>toggleTr('h');document.getElementById('h-lay').onclick=()=>setLayout('vert');renderV();const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.body.appendChild(tag);};
+</script>
+</body>
+</html>
