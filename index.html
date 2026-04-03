@@ -12,7 +12,7 @@
   --green:#10b981;--green-light:#d1fae5;--green-dark:#065f46;
   --orange:#f97316;--orange-light:#ffedd5;
   --g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g600:#475569;
-  --card:#fff;--bg:#f7f8fa;--fs:15px;
+  --card:#fff;--bg:#f7f8fa;--fs:15px;--hfs:19px;
 }
 body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--navy);}
 .hdr{background:var(--navy);color:#fff;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;}
@@ -53,8 +53,8 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:99px;transition:width .5s;}
 #vert{display:block;}
 #vert.off{display:none;}
-.vert-top{position:sticky;top:0;z-index:100;background:var(--card);box-shadow:0 2px 10px rgba(0,0,0,.08);border-radius:0 0 18px 18px;}
-.vert-top iframe{width:100%;height:28vh;max-height:220px;border:none;display:block;}
+.vert-top{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--card);box-shadow:0 2px 10px rgba(0,0,0,.08);border-radius:0 0 18px 18px;}
+.vert-top iframe{width:100%;height:200px;border:none;display:block;}
 .vert-ctrl{padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px;}
 .sub-list{padding:8px 10px 30px;display:flex;flex-direction:column;gap:7px;}
 .sc{background:var(--card);border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;}
@@ -104,6 +104,7 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
 .hb.view{background:var(--g100);color:var(--g600);border:1px solid var(--g200);}
 .hb.view.on{background:var(--blue);color:#fff;border-color:var(--blue);}
 .hb.lay{background:var(--navy);color:#fff;margin-left:auto;}
+.hb.fnt{background:var(--blue-light);color:var(--blue);}
 .h-right{flex:1;min-width:0;padding:10px 12px 24px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;}
 .hrow{display:flex;align-items:center;gap:7px;border-radius:13px;}
 .hrow.playing{animation:cpulse 1.4s ease-in-out infinite;}
@@ -111,11 +112,11 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
 .hsb{flex:1;min-width:0;padding:12px 15px;border-radius:13px;border:none;background:var(--card);text-align:left;cursor:pointer;transition:background .13s;line-height:1.45;word-break:break-word;box-shadow:0 1px 3px rgba(0,0,0,.06);}
 .hsb:hover{background:var(--blue-soft);}
 .hsb.done{background:#f0fdf4;}
-.h-eng{display:block;font-size:19px;font-weight:600;color:var(--navy);}
+.h-eng{display:block;font-size:var(--hfs);font-weight:600;color:var(--navy);}
 .hsb.done .h-eng{color:var(--green-dark);text-decoration:line-through;}
 .hkwrap{overflow:hidden;max-height:0;transition:max-height .25s,margin-top .2s;}
 .hkwrap.open{max-height:60px;margin-top:5px;}
-.hkt{font-size:13px;color:var(--g400);font-style:italic;display:block;padding-top:5px;border-top:1px solid var(--blue-light);}
+.hkt{font-size:calc(var(--hfs) - 5px);color:var(--g400);font-style:italic;display:block;padding-top:5px;border-top:1px solid var(--blue-light);}
 .hsb.done .hkt{color:var(--green);border-top-color:#bbf7d0;}
 .hacts{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
 .ha{width:42px;height:42px;border:1px solid var(--g200);background:var(--card);border-radius:9px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.12s;}
@@ -191,8 +192,20 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
       <div class="h-btns">
         <button class="hb mode" id="h-mode">▶ 한줄</button>
         <button class="hb tr" id="h-tr">🇰🇷 번역</button>
+        <div class="fpwrap">
+          <button class="hb fnt" id="h-fnt">가 글자</button>
+          <div class="fpop" id="h-fpop">
+            <div class="fplbl">글자 크기</div>
+            <div class="fprow">
+              <button class="h-fpo fpo" data-s="15">작게</button>
+              <button class="h-fpo fpo on" data-s="19">보통</button>
+              <button class="h-fpo fpo" data-s="23">크게</button>
+              <button class="h-fpo fpo" data-s="27">아주 크게</button>
+            </div>
+          </div>
+        </div>
         <button class="hb view on" id="h-all">전체</button>
-        <button class="hb view" id="h-done">✔ 외웠음</button>
+        <button class="hb view" id="h-done">✔ 외웨음</button>
         <button class="hb lay" id="h-lay">📱 학생 모드</button>
       </div>
     </div>
@@ -457,9 +470,14 @@ const SUBS=[
 const KEY='sg_'+btoa('E4rwtuJT3KM').slice(0,8);
 let st={},showKor=false,openK=new Set();
 let playing=null,paused=false,pausedIdx=null,playMode='single',tid=null;
-let pv,ph,view='all',selIdx=null,fs=15,layout='vert';
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY))||{};st=s.st||{};fs=s.fs||15;for(let i=0;i<SUBS.length;i++)if(!st[i])st[i]={h:false,l:false};}catch{st={};}}
-function save(){localStorage.setItem(KEY,JSON.stringify({st,fs}));}
+let pv,ph,view='all',selIdx=null,fs=15,hfs=19,layout='vert';
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY))||{};st=s.st||{};fs=s.fs||15;hfs=s.hfs||19;for(let i=0;i<SUBS.length;i++)if(!st[i])st[i]={h:false,l:false};}catch{st={};}}
+function save(){localStorage.setItem(KEY,JSON.stringify({st,fs,hfs}));}
+function applyHfs(n){
+  hfs=n;document.documentElement.style.setProperty('--hfs',n+'px');
+  document.querySelectorAll('.h-fpo').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));
+  save();
+}
 function applyFs(n){fs=n;document.documentElement.style.setProperty('--fs',n+'px');document.querySelectorAll('.fpo').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));save();}
 function prog(){const ld=Object.values(st).filter(s=>s.l).length,tot=SUBS.length;const p=tot?Math.round(ld/tot*100):0,c=2*Math.PI*19;const fg=document.getElementById('pfg');if(fg)fg.style.strokeDashoffset=c*(1-p/100);const g=id=>document.getElementById(id);if(g('ppct'))g('ppct').textContent=p+'%';if(g('pcnt'))g('pcnt').textContent=ld+' / '+tot+' 문장';if(g('pbar'))g('pbar').style.width=p+'%';if(g('hpbar'))g('hpbar').style.width=p+'%';if(g('hptxt'))g('hptxt').textContent=p+'% ('+ld+'/'+tot+')';}
 function nowPlaying(idx){const t=document.getElementById('h-txt'),k=document.getElementById('h-kor');if(!t)return;if(idx===null){t.textContent='자막을 클릭해서 시작하세요';t.classList.add('idle');if(k)k.style.display='none';return;}t.textContent=SUBS[idx].text;t.classList.remove('idle');if(k){if(showKor){k.textContent=SUBS[idx].kor;k.style.display='';}else k.style.display='none';}}
@@ -484,7 +502,12 @@ function toggleTr(m){showKor=!showKor;if(!showKor)openK.clear();const lbl=showKo
 function setLayout(m){layout=m;document.getElementById('vert').classList.toggle('off',m==='horiz');document.getElementById('horiz').classList.toggle('on',m==='horiz');m==='horiz'?renderH():renderV();}
 function syncMode(){const lbl=playMode==='single'?'▶ 한줄':'▶▶ 다음줄';['v-mode','h-mode'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',playMode==='next');}});}
 window.onYouTubeIframeAPIReady=function(){pv=new YT.Player('pv');ph=new YT.Player('ph');};
-window.onload=function(){load();applyFs(fs);document.getElementById('v-all').onclick=function(){this.classList.add('on');document.getElementById('v-done').classList.remove('on');renderV('all');};document.getElementById('v-done').onclick=function(){this.classList.add('on');document.getElementById('v-all').classList.remove('on');renderV('done');};document.getElementById('v-mode').onclick=()=>{playMode=playMode==='single'?'next':'single';syncMode();};document.getElementById('v-tr').onclick=()=>toggleTr('v');document.getElementById('v-lay').onclick=()=>setLayout('horiz');document.getElementById('v-fnt').onclick=e=>{e.stopPropagation();document.getElementById('fpop').classList.toggle('open');};document.querySelectorAll('.fpo').forEach(b=>b.onclick=e=>{e.stopPropagation();applyFs(+b.dataset.s);renderV();document.getElementById('fpop').classList.remove('open');});document.addEventListener('click',()=>document.getElementById('fpop').classList.remove('open'));document.getElementById('h-all').onclick=function(){this.classList.add('on');document.getElementById('h-done').classList.remove('on');renderH('all');};document.getElementById('h-done').onclick=function(){this.classList.add('on');document.getElementById('h-all').classList.remove('on');renderH('done');};document.getElementById('h-mode').onclick=()=>{playMode=playMode==='single'?'next':'single';syncMode();};document.getElementById('h-tr').onclick=()=>toggleTr('h');document.getElementById('h-lay').onclick=()=>setLayout('vert');renderV();const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.body.appendChild(tag);};
+window.onload=function(){
+  function setSubPadding(){const h=document.querySelector('.vert-top')?.offsetHeight||0;const sv=document.getElementById('sv');if(sv)sv.style.paddingTop=(h+8)+'px';}
+  setSubPadding();window.addEventListener('resize',setSubPadding);
+  load();applyFs(fs);applyHfs(hfs);document.getElementById('v-all').onclick=function(){this.classList.add('on');document.getElementById('v-done').classList.remove('on');renderV('all');};document.getElementById('v-done').onclick=function(){this.classList.add('on');document.getElementById('v-all').classList.remove('on');renderV('done');};document.getElementById('v-mode').onclick=()=>{playMode=playMode==='single'?'next':'single';syncMode();};document.getElementById('v-tr').onclick=()=>toggleTr('v');document.getElementById('v-lay').onclick=()=>setLayout('horiz');document.getElementById('v-fnt').onclick=e=>{e.stopPropagation();document.getElementById('fpop').classList.toggle('open');};document.querySelectorAll('.fpo').forEach(b=>b.onclick=e=>{e.stopPropagation();applyFs(+b.dataset.s);renderV();document.getElementById('fpop').classList.remove('open');});document.addEventListener('click',()=>{document.getElementById('fpop').classList.remove('open');document.getElementById('h-fpop')?.classList.remove('open');});document.getElementById('h-all').onclick=function(){this.classList.add('on');document.getElementById('h-done').classList.remove('on');renderH('all');};document.getElementById('h-done').onclick=function(){this.classList.add('on');document.getElementById('h-all').classList.remove('on');renderH('done');};document.getElementById('h-mode').onclick=()=>{playMode=playMode==='single'?'next':'single';syncMode();};document.getElementById('h-tr').onclick=()=>toggleTr('h');document.getElementById('h-lay').onclick=()=>setLayout('vert');
+  document.getElementById('h-fnt').onclick=e=>{e.stopPropagation();document.getElementById('h-fpop').classList.toggle('open');};
+  document.querySelectorAll('.h-fpo').forEach(b=>b.onclick=e=>{e.stopPropagation();applyHfs(+b.dataset.s);renderH();document.getElementById('h-fpop').classList.remove('open');});renderV();const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.body.appendChild(tag);};
 </script>
 </body>
 </html>
