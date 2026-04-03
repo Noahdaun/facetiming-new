@@ -53,10 +53,10 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:99px;transition:width .5s;}
 #vert{display:block;}
 #vert.off{display:none;}
-.vert-top{background:var(--card);box-shadow:0 2px 10px rgba(0,0,0,.08);border-radius:0 0 18px 18px;margin-bottom:8px;}
-.vert-top iframe{width:100%;aspect-ratio:16/9;border:none;display:block;}
+.vert-top{position:sticky;top:0;z-index:100;background:var(--card);box-shadow:0 2px 10px rgba(0,0,0,.08);border-radius:0 0 18px 18px;}
+.vert-top iframe{width:100%;height:28vh;max-height:220px;border:none;display:block;}
 .vert-ctrl{padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px;}
-.sub-list{padding:0 10px 24px;display:flex;flex-direction:column;gap:7px;}
+.sub-list{padding:8px 10px 30px;display:flex;flex-direction:column;gap:7px;}
 .sc{background:var(--card);border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;}
 .sc.playing{animation:cpulse 1.4s ease-in-out infinite;}
 @keyframes cpulse{0%,100%{box-shadow:0 0 0 2.5px var(--blue),0 4px 14px rgba(59,130,246,.15);}50%{box-shadow:0 0 0 4px var(--blue),0 6px 18px rgba(59,130,246,.3);}}
@@ -77,24 +77,33 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
 .sa.hid{background:var(--g100);}
 .sa:first-child{border-bottom:1px solid var(--g100);}
 #horiz{display:none;}
-#horiz.on{display:flex;flex-direction:row;}
-.h-left{width:40%;min-width:300px;max-width:480px;flex-shrink:0;background:var(--beige);border-right:1px solid var(--beige-mid);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
+#horiz.on{display:flex;flex-direction:row;height:calc(100vh - 38px);}
+.h-left{width:40%;min-width:300px;max-width:480px;flex-shrink:0;background:var(--beige);border-right:1px solid var(--beige-mid);display:flex;flex-direction:column;overflow:hidden;}
 .h-title{padding:14px 18px 12px;background:var(--card);border-bottom:1px solid var(--beige-mid);flex-shrink:0;}
 .h-eye{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
 .h-main{font-size:19px;font-weight:800;color:var(--navy);line-height:1.2;}
 .h-sub{font-size:12px;color:var(--g400);margin-top:3px;}
-.h-vid{flex:1;display:flex;align-items:center;padding:12px 16px;min-height:0;}
+.h-vid{flex:1;min-height:0;display:flex;align-items:center;padding:14px 16px;}
 .h-vid iframe{width:100%;aspect-ratio:16/9;border:none;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);}
 .h-now{margin:0 16px;background:var(--card);border:1.5px solid var(--blue-light);border-radius:12px;padding:12px 14px;flex-shrink:0;}
 .h-now-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);}
 .h-now-txt{font-size:17px;font-weight:700;color:var(--navy);line-height:1.3;margin-top:4px;}
 .h-now-txt.idle{color:var(--g400);font-size:13px;font-style:italic;font-weight:400;}
 .h-now-kor{font-size:13px;color:var(--g400);font-style:italic;margin-top:3px;}
-.h-ctrl{padding:10px 16px 14px;background:var(--card);border-top:1px solid var(--beige-mid);flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
+.h-ctrl{flex-shrink:0;padding:12px 16px 14px;background:var(--card);border-top:1px solid var(--beige-mid);display:flex;flex-direction:column;gap:8px;}
 .h-prog{display:flex;align-items:center;gap:10px;}
 .h-prog-bg{flex:1;height:5px;background:var(--g200);border-radius:99px;overflow:hidden;}
 .h-prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:99px;transition:width .5s;}
 .h-prog-txt{font-size:12px;color:var(--g400);white-space:nowrap;}
+.h-btns{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.hb{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:9px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:.13s;white-space:nowrap;}
+.hb.mode{background:var(--orange-light);color:var(--orange);}
+.hb.mode.on{background:var(--orange);color:#fff;}
+.hb.tr{background:var(--green-light);color:var(--green-dark);}
+.hb.tr.on{background:var(--green-dark);color:#fff;}
+.hb.view{background:var(--g100);color:var(--g600);border:1px solid var(--g200);}
+.hb.view.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.hb.lay{background:var(--navy);color:#fff;margin-left:auto;}
 .h-right{flex:1;min-width:0;padding:10px 12px 24px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;}
 .hrow{display:flex;align-items:center;gap:7px;border-radius:13px;}
 .hrow.playing{animation:cpulse 1.4s ease-in-out infinite;}
@@ -173,22 +182,18 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:
     <div class="h-vid">
       <iframe id="ph" src="https://www.youtube.com/embed/E4rwtuJT3KM?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
-    <div class="h-now">
-      <div class="h-now-lbl">▶ Now Playing</div>
-      <div class="h-now-txt idle" id="h-txt">자막을 클릭해서 시작하세요</div>
-      <div class="h-now-kor" id="h-kor" style="display:none"></div>
-    </div>
+
     <div class="h-ctrl">
       <div class="h-prog">
         <div class="h-prog-bg"><div class="h-prog-fill" id="hpbar" style="width:0%"></div></div>
         <div class="h-prog-txt" id="hptxt">0%</div>
       </div>
-      <div class="btns">
-        <button class="btn mode" id="h-mode">▶ 한줄</button>
-        <button class="btn tr" id="h-tr">🇰🇷 번역</button>
-        <button class="btn view on" id="h-all">전체</button>
-        <button class="btn view" id="h-done">✔ 외웠음</button>
-        <button class="btn lay" id="h-lay">📱 학생 모드</button>
+      <div class="h-btns">
+        <button class="hb mode" id="h-mode">▶ 한줄</button>
+        <button class="hb tr" id="h-tr">🇰🇷 번역</button>
+        <button class="hb view on" id="h-all">전체</button>
+        <button class="hb view" id="h-done">✔ 외웠음</button>
+        <button class="hb lay" id="h-lay">📱 학생 모드</button>
       </div>
     </div>
   </div>
@@ -461,9 +466,9 @@ function nowPlaying(idx){const t=document.getElementById('h-txt'),k=document.get
 function renderV(v){view=v||view;const div=document.getElementById('sv');div.innerHTML='';SUBS.forEach((sub,i)=>{if(view==='done'&&!st[i].l)return;const card=document.createElement('div');card.className='sc'+(i===playing?' playing':'')+(i===selIdx?' sel':'')+(st[i].l?' done':'');card.dataset.i=i;const inn=document.createElement('div');inn.className='sc-in';const pb=document.createElement('button');pb.className='spa';const es=document.createElement('span');es.className='eng';es.textContent=st[i].h?'🙈':sub.text;pb.appendChild(es);const kw=document.createElement('span');kw.className='kwrap'+(openK.has(i)?' open':'');const ks=document.createElement('span');ks.className='kt';if(showKor)ks.textContent=sub.kor;kw.appendChild(ks);pb.appendChild(kw);pb.onclick=()=>{if(showKor&&!st[i].h){openK.has(i)?openK.delete(i):openK.add(i);}doPlay(i,'v');};const acts=document.createElement('div');acts.className='sacts';const hb=document.createElement('button');hb.className='sa'+(st[i].h?' hid':'');hb.textContent='🙈';hb.onclick=e=>{e.stopPropagation();st[i].h=!st[i].h;save();renderV();};const cb=document.createElement('button');cb.className='sa'+(st[i].l?' chk':'');cb.textContent='✔';cb.onclick=e=>{e.stopPropagation();st[i].l=!st[i].l;save();renderV();prog();};acts.appendChild(hb);acts.appendChild(cb);inn.appendChild(pb);inn.appendChild(acts);card.appendChild(inn);div.appendChild(card);});prog();}
 function renderH(v){view=v||view;const div=document.getElementById('sh');div.innerHTML='';SUBS.forEach((sub,i)=>{if(view==='done'&&!st[i].l)return;const row=document.createElement('div');row.className='hrow'+(i===playing?' playing':'')+(i===selIdx?' sel':'');row.dataset.i=i;const btn=document.createElement('button');btn.className='hsb'+(st[i].l?' done':'');const eng=document.createElement('span');eng.className='h-eng';eng.textContent=st[i].h?'🙈':sub.text;btn.appendChild(eng);const kw=document.createElement('span');kw.className='hkwrap'+(openK.has(i)?' open':'');const ks=document.createElement('span');ks.className='hkt';if(showKor)ks.textContent=sub.kor;kw.appendChild(ks);btn.appendChild(kw);btn.onclick=()=>{if(showKor&&!st[i].h){openK.has(i)?openK.delete(i):openK.add(i);}doPlay(i,'h');};const acts=document.createElement('div');acts.className='hacts';const hb=document.createElement('button');hb.className='ha'+(st[i].h?' hid':'');hb.textContent='🙈';hb.onclick=e=>{e.stopPropagation();st[i].h=!st[i].h;save();renderH();};const cb=document.createElement('button');cb.className='ha'+(st[i].l?' chk':'');cb.textContent='✔';cb.onclick=e=>{e.stopPropagation();st[i].l=!st[i].l;save();renderH();prog();};acts.appendChild(hb);acts.appendChild(cb);row.appendChild(btn);row.appendChild(acts);div.appendChild(row);});prog();}
 function scrollTo(i,m){const id=m==='v'?'sv':'sh';document.getElementById(id)?.querySelector('[data-i="'+i+'"]')?.scrollIntoView({behavior:'smooth',block:'center'});}
-function doPlay(i,m){selIdx=i;const cp=m==='v'?pv:ph;const re=m==='v'?renderV:renderH;re();if(!cp?.seekTo)return;const s=cp.getPlayerState();if(playing!==i){startPlay(i,m);return;}if(s===1){cp.pauseVideo();if(tid)clearTimeout(tid);paused=true;pausedIdx=i;playing=null;nowPlaying(null);re();return;}if(s===2&&paused&&pausedIdx===i){startPlay(i,m);return;}startPlay(i,m);}
-function startPlay(i,m){playing=i;paused=false;pausedIdx=null;const re=m==='v'?renderV:renderH;re();scrollTo(i,m);nowPlaying(i);const cp=m==='v'?pv:ph;const s=SUBS[i].start,e=playMode==='single'?SUBS[i].end:(SUBS[i+1]?SUBS[i+1].end:SUBS[i].end);cp.seekTo(s,true);cp.playVideo();if(tid)clearTimeout(tid);tid=setTimeout(()=>{cp.pauseVideo();playing=null;nowPlaying(null);re();},(e-s)*1000);}
-function toggleTr(m){showKor=!showKor;if(!showKor)openK.clear();const lbl=showKor?'🇰🇷 번역 숨기기':'🇰🇷 번역';['v-tr','h-tr'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',showKor);}});nowPlaying(playing);layout==='vert'?renderV():renderH();}
+function doPlay(i,m){selIdx=i;const cp=m==='v'?pv:ph;const re=m==='v'?renderV:renderH;re();if(!cp?.seekTo)return;const s=cp.getPlayerState();if(playing!==i){startPlay(i,m);return;}if(s===1){cp.pauseVideo();if(tid)clearTimeout(tid);paused=true;pausedIdx=i;playing=null;re();return;}if(s===2&&paused&&pausedIdx===i){startPlay(i,m);return;}startPlay(i,m);}
+function startPlay(i,m){playing=i;paused=false;pausedIdx=null;const re=m==='v'?renderV:renderH;re();scrollTo(i,m);const cp=m==='v'?pv:ph;const s=SUBS[i].start,e=playMode==='single'?SUBS[i].end:(SUBS[i+1]?SUBS[i+1].end:SUBS[i].end);cp.seekTo(s,true);cp.playVideo();if(tid)clearTimeout(tid);tid=setTimeout(()=>{cp.pauseVideo();playing=null;re();},(e-s)*1000);}
+function toggleTr(m){showKor=!showKor;if(!showKor)openK.clear();const lbl=showKor?'🇰🇷 번역 숨기기':'🇰🇷 번역';['v-tr','h-tr'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',showKor);}});layout==='vert'?renderV():renderH();}
 function setLayout(m){layout=m;document.getElementById('vert').classList.toggle('off',m==='horiz');document.getElementById('horiz').classList.toggle('on',m==='horiz');m==='horiz'?renderH():renderV();}
 function syncMode(){const lbl=playMode==='single'?'▶ 한줄':'▶▶ 다음줄';['v-mode','h-mode'].forEach(id=>{const b=document.getElementById(id);if(b){b.textContent=lbl;b.classList.toggle('on',playMode==='next');}});}
 window.onYouTubeIframeAPIReady=function(){pv=new YT.Player('pv');ph=new YT.Player('ph');};
